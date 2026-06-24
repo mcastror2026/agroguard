@@ -87,7 +87,7 @@ export function SearchBar({
           <button
             onClick={onUseGeolocation}
             disabled={loading}
-            className="h-12 px-4 rounded-2xl bg-blue-500 text-white font-light shadow-sm hover:shadow-md hover:bg-blue-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shrink-0"
+            className="h-12 px-4 rounded-2xl bg-blue-600 text-white font-medium shadow-md hover:shadow-lg hover:bg-blue-700 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shrink-0"
             title="Usar mi ubicación"
           >
             <Navigation className="w-5 h-5" strokeWidth={1.5} />
@@ -156,7 +156,7 @@ export function SearchBar({
         <button
           onClick={onSearch}
           disabled={loading || !query.trim()}
-          className="flex-1 h-11 rounded-2xl bg-emerald-500 text-white font-light shadow-sm hover:shadow-md hover:bg-emerald-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="flex-1 h-11 rounded-2xl bg-emerald-600 text-white font-medium shadow-md hover:shadow-lg hover:bg-emerald-700 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           <Search className="w-4 h-4" strokeWidth={1.5} />
           Buscar
@@ -165,7 +165,7 @@ export function SearchBar({
         <button
           onClick={onRefresh}
           disabled={loading || !query.trim()}
-          className="flex-1 h-11 rounded-2xl bg-amber-500 text-white font-light shadow-sm hover:shadow-md hover:bg-amber-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="flex-1 h-11 rounded-2xl bg-amber-500 text-white font-medium shadow-md hover:shadow-lg hover:bg-amber-600 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} strokeWidth={1.5} />
           Actualizar
@@ -174,7 +174,7 @@ export function SearchBar({
         <button
           onClick={onClear}
           disabled={loading}
-          className="h-11 px-4 rounded-2xl border border-gray-200/50 bg-white text-gray-700 font-light shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-200 disabled:opacity-50 flex items-center gap-2"
+          className="h-11 px-4 rounded-2xl border border-gray-300 bg-white text-gray-700 font-medium shadow-md hover:shadow-lg hover:bg-gray-50 active:scale-95 transition-all duration-200 disabled:opacity-50 flex items-center gap-2"
         >
           <Trash2 className="w-4 h-4" strokeWidth={1.5} />
           <span className="hidden sm:inline">Limpiar</span>
