@@ -172,27 +172,6 @@ export function TodaySummary({ meteo, obs, uvNow }: TodaySummaryProps) {
             </div>
           </div>
 
-          {obs && (
-            <div className="bg-white border border-blue-200/50 rounded-2xl p-5">
-              <div className="text-xs font-light text-blue-600 mb-3 uppercase tracking-wider">
-                ✈️ Estación METAR — {obs.airportName}
-              </div>
-              <div className="text-2xl font-light text-gray-900 tracking-tight">
-                {fmt(obs.temp, 1)}°C
-                {obs.humidity !== null && (
-                  <span className="text-lg text-gray-500 ml-2">· {obs.humidity}% HR</span>
-                )}
-              </div>
-              <div className="text-xs text-gray-400 mt-2 font-light flex items-center justify-between">
-                <span>{obs.icao} · {obs.distanceKm} km de distancia</span>
-                {obs.observedAt && (
-                  <span>
-                    {new Date(obs.observedAt * 1000).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       </motion.section>
     );
