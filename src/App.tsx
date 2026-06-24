@@ -10,7 +10,6 @@ import { TodaySummary } from './components/TodaySummary';
 import { FrostForecast } from './components/FrostForecast';
 import { WeatherForecast } from './components/WeatherForecast';
 import { SkeletonRiskIndicator, SkeletonTodaySummary, SkeletonFrostForecast, SkeletonWeatherForecast } from './components/SkeletonLoader';
-import { incrementVisitCounter, formatVisitCount, incrementGlobalCounter, getGlobalCounter } from './utils/visitCounter';
 
 import { geocode, fetchForecast, fetchObservations, searchLocations, LocationData, SearchResult } from './services/weatherAPI';
 import { frostCategory, fungalRisk, uvCategory } from './utils/riskCalculations';
@@ -26,8 +25,6 @@ export default function App() {
   const [focusNight, setFocusNight] = useState(false);
   const [servedFromCache, setServedFromCache] = useState(false);
   const lastController = useRef<AbortController | null>(null);
-  const [visitCount, setVisitCount] = useState(0);
-  const [globalVisitCount, setGlobalVisitCount] = useState<number | null>(null);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -39,30 +36,6 @@ export default function App() {
     setRecentSearches(getRecentSearches());
   }, []);
 
-  // Incrementar contadores de visitas al cargar la aplicación
-  useEffect(() => {
-    // Incrementar contador local con cada carga de página
-    const count = incrementVisitCounter();
-    setVisitCount(count);
-
-    // Incrementar contador global con cada carga de página
-    incrementGlobalCounter().then(globalCount => {
-      if (globalCount !== null) {
-        setGlobalVisitCount(globalCount);
-      }
-    });
-
-    // Timeout de seguridad: si después de 3 segundos no hay contador global, usar fallback
-    const timeout = setTimeout(() => {
-      if (globalVisitCount === null) {
-        const fallbackKey = 'agroguard:global_fallback';
-        const fallback = parseInt(localStorage.getItem(fallbackKey) || '1');
-        setGlobalVisitCount(fallback);
-      }
-    }, 3000);
-
-    return () => clearTimeout(timeout);
-  }, []);
 
   // Búsqueda de sugerencias con debounce
   useEffect(() => {
@@ -627,15 +600,6 @@ export default function App() {
             <p className="text-sm text-gray-500 font-light">
               Desarrollado por <span className="font-normal text-emerald-600">MC</span> • Versión 1.0
             </p>
-            <div className="text-xs text-gray-400 mt-2 space-y-1 font-light">
-              <p>Visitas en este dispositivo: {formatVisitCount(visitCount)}</p>
-              {globalVisitCount !== null && (
-                <p>Visitas totales: {formatVisitCount(globalVisitCount)}</p>
-              )}
-              {globalVisitCount === null && (
-                <p>Visitas totales: <span className="text-gray-300">cargando...</span></p>
-              )}
-            </div>
           </div>
         </motion.footer>
       </div>
