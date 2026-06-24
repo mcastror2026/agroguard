@@ -156,7 +156,7 @@ export function SearchBar({
         <button
           onClick={onSearch}
           disabled={loading || !query.trim()}
-          className="flex-1 h-11 rounded-2xl bg-emerald-600 text-white font-medium shadow-md hover:shadow-lg hover:bg-emerald-700 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="flex-1 h-11 rounded-xl bg-emerald-600 text-white font-semibold shadow-lg hover:bg-emerald-700 active:scale-95 transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 tracking-wide"
         >
           <Search className="w-4 h-4" strokeWidth={1.5} />
           Buscar
@@ -165,7 +165,7 @@ export function SearchBar({
         <button
           onClick={onRefresh}
           disabled={loading || !query.trim()}
-          className="flex-1 h-11 rounded-2xl bg-amber-500 text-white font-medium shadow-md hover:shadow-lg hover:bg-amber-600 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="flex-1 h-11 rounded-xl bg-amber-500 text-white font-semibold shadow-lg hover:bg-amber-600 active:scale-95 transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 tracking-wide"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} strokeWidth={1.5} />
           Actualizar
