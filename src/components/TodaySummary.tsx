@@ -158,7 +158,7 @@ export function TodaySummary({ meteo, obs, uvNow }: TodaySummaryProps) {
 
         <div className="grid md:grid-cols-2 gap-3 md:gap-4">
           <div className="bg-white border border-gray-200/50 rounded-2xl p-5">
-            <div className="text-xs font-light text-gray-500 mb-3 uppercase tracking-wider">Rango de Hoy</div>
+            <div className="text-xs font-light text-gray-500 mb-3 uppercase tracking-wider">Temp. mín / máx hoy</div>
             <div className="flex items-center justify-center gap-4">
               <div className="flex items-center gap-2">
                 <TrendingDown className="w-5 h-5 text-blue-500" strokeWidth={1.5} />
