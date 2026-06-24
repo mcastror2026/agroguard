@@ -168,12 +168,12 @@ export default function App() {
       const location: LocationData = {
         lat: latitude,
         lon: longitude,
-        name: `📍 ${latitude.toFixed(4)}°, ${longitude.toFixed(4)}°`,
+        name: `Mi ubicación (${latitude.toFixed(4)}°, ${longitude.toFixed(4)}°)`,
         country: 'CL'
       };
 
       setPlace(location);
-      setQuery(location.name);
+      setQuery("");
 
       // Fetch weather data for this location
       const [{ json: meteorological, fromCache }, observations] = await Promise.all([
