@@ -488,7 +488,7 @@ export default function App() {
               {([
                 { key: 'resumen', label: 'Resumen', icon: AlertTriangle },
                 { key: 'heladas', label: 'Heladas', icon: Snowflake },
-                { key: 'clima',   label: 'Clima 5d', icon: CloudRain },
+                { key: 'clima',   label: 'Clima', icon: CloudRain },
               ] as { key: Tab; label: string; icon: any }[]).map(({ key, label, icon: Icon }) => (
                 <button
                   key={key}

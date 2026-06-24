@@ -81,13 +81,13 @@ export function SearchBar({
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-[auto_1fr_auto_auto_auto] items-end">
-        {/* Botón de Geolocalización */}
+      {/* Fila 1: input + botón geolocalización */}
+      <div className="flex gap-2 items-center mb-3">
         {onUseGeolocation && (
           <button
             onClick={onUseGeolocation}
             disabled={loading}
-            className="h-12 px-4 rounded-2xl bg-blue-500 text-white font-light shadow-sm hover:shadow-md hover:bg-blue-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="h-12 px-4 rounded-2xl bg-blue-500 text-white font-light shadow-sm hover:shadow-md hover:bg-blue-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shrink-0"
             title="Usar mi ubicación"
           >
             <Navigation className="w-5 h-5" strokeWidth={1.5} />
@@ -95,7 +95,7 @@ export function SearchBar({
           </button>
         )}
 
-        <div className="relative" onBlur={onBlurSearch}>
+        <div className="relative flex-1" onBlur={onBlurSearch}>
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" strokeWidth={1.5} />
           <input
             className="w-full pl-10 pr-4 py-3 text-lg rounded-2xl border border-gray-200/50 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 font-light"
@@ -149,32 +149,35 @@ export function SearchBar({
             </div>
           )}
         </div>
-        
+      </div>
+
+      {/* Fila 2: botones de acción */}
+      <div className="flex gap-2">
         <button
           onClick={onSearch}
           disabled={loading || !query.trim()}
-          className="h-12 px-6 rounded-2xl bg-emerald-500 text-white font-light shadow-sm hover:shadow-md hover:bg-emerald-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="flex-1 h-11 rounded-2xl bg-emerald-500 text-white font-light shadow-sm hover:shadow-md hover:bg-emerald-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           <Search className="w-4 h-4" strokeWidth={1.5} />
           Buscar
         </button>
-        
+
         <button
           onClick={onRefresh}
           disabled={loading || !query.trim()}
-          className="h-12 px-6 rounded-2xl bg-amber-500 text-white font-light shadow-sm hover:shadow-md hover:bg-amber-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="flex-1 h-11 rounded-2xl bg-amber-500 text-white font-light shadow-sm hover:shadow-md hover:bg-amber-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} strokeWidth={1.5} />
           Actualizar
         </button>
-        
+
         <button
           onClick={onClear}
           disabled={loading}
-          className="h-12 px-6 rounded-2xl border border-gray-200/50 bg-white text-gray-700 font-light shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-200 disabled:opacity-50 flex items-center gap-2"
+          className="h-11 px-4 rounded-2xl border border-gray-200/50 bg-white text-gray-700 font-light shadow-sm hover:shadow-md hover:bg-gray-50 transition-all duration-200 disabled:opacity-50 flex items-center gap-2"
         >
           <Trash2 className="w-4 h-4" strokeWidth={1.5} />
-          Limpiar
+          <span className="hidden sm:inline">Limpiar</span>
         </button>
       </div>
       
