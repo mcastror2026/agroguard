@@ -596,9 +596,14 @@ export default function App() {
           transition={{ duration: 0.6, delay: 0.8 }}
           className="mt-16 text-center pb-8"
         >
-          <div className="border-t border-gray-200/50 pt-8">
+          <div className="border-t border-gray-200/50 pt-8 space-y-3">
             <p className="text-sm text-gray-500 font-light">
               Desarrollado por <span className="font-normal text-emerald-600">MC</span> • Versión 1.0
+            </p>
+            <p className="text-xs text-gray-400 font-light max-w-xl mx-auto leading-relaxed">
+              ⚠️ La información meteorológica proviene de modelos globales (Open-Meteo) y tiene carácter referencial.
+              No reemplaza la observación local ni el asesoramiento de un profesional agrícola.
+              Verifique siempre con estaciones meteorológicas cercanas antes de tomar decisiones productivas.
             </p>
           </div>
         </motion.footer>
