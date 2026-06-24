@@ -173,6 +173,27 @@ export async function fetchForecast(
   return await fetchJSONWithCache(url, 600, bust, { signal });
 }
 
+export async function fetchColdHoursHistory(
+  lat: number,
+  lon: number,
+  startDate: string,
+  bust = false,
+  signal?: AbortSignal
+) {
+  const today = new Date().toLocaleDateString('en-CA');
+  const params = new URLSearchParams({
+    latitude: String(lat),
+    longitude: String(lon),
+    start_date: startDate,
+    end_date: today,
+    hourly: 'temperature_2m',
+    timezone: 'auto'
+  });
+
+  const url = `https://archive-api.open-meteo.com/v1/archive?${params.toString()}`;
+  return await fetchJSONWithCache(url, 3600, bust, { signal }); // 1h cache
+}
+
 export async function fetchObservations(
   lat: number,
   lon: number,

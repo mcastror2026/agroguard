@@ -1,19 +1,21 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Leaf, AlertTriangle, Snowflake, CloudRain } from 'lucide-react';
+import { Leaf, AlertTriangle, Snowflake, CloudRain, Thermometer } from 'lucide-react';
 
-type Tab = 'resumen' | 'heladas' | 'clima';
+type Tab = 'resumen' | 'heladas' | 'clima' | 'frio';
 
 import { SearchBar } from './components/SearchBar';
 import { RiskIndicator } from './components/RiskIndicator';
 import { TodaySummary } from './components/TodaySummary';
 import { FrostForecast } from './components/FrostForecast';
 import { WeatherForecast } from './components/WeatherForecast';
+import { ColdHours } from './components/ColdHours';
 import { SkeletonRiskIndicator, SkeletonTodaySummary, SkeletonFrostForecast, SkeletonWeatherForecast } from './components/SkeletonLoader';
 
-import { geocode, fetchForecast, fetchObservations, searchLocations, LocationData, SearchResult } from './services/weatherAPI';
+import { geocode, fetchForecast, fetchObservations, fetchColdHoursHistory, searchLocations, LocationData, SearchResult } from './services/weatherAPI';
 import { frostCategory, fungalRisk, uvCategory } from './utils/riskCalculations';
 import { getRecentSearches, addRecentSearch, clearRecentSearches, RecentSearch } from './utils/recentSearches';
+import { getSeasonStart, countColdHours } from './utils/coldHours';
 
 export default function App() {
   const [query, setQuery] = useState("");
@@ -30,6 +32,8 @@ export default function App() {
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>('resumen');
+  const [coldHoursData, setColdHoursData] = useState<{ times: string[]; temps: number[]; total: number } | null>(null);
+  const [coldHoursLoading, setColdHoursLoading] = useState(false);
 
   // Load recent searches
   useEffect(() => {
@@ -208,6 +212,24 @@ export default function App() {
     setSearchResults([]);
     setShowSuggestions(false);
   }
+
+  // Cargar horas frío cuando se activa el tab o hay una ubicación
+  useEffect(() => {
+    if (activeTab !== 'frio' || !place) return;
+
+    setColdHoursLoading(true);
+    const seasonStart = getSeasonStart();
+
+    fetchColdHoursHistory(place.lat, place.lon, seasonStart)
+      .then(({ json }) => {
+        const times: string[] = json?.hourly?.time ?? [];
+        const temps: number[] = json?.hourly?.temperature_2m ?? [];
+        const total = countColdHours(temps);
+        setColdHoursData({ times, temps, total });
+      })
+      .catch(() => setColdHoursData(null))
+      .finally(() => setColdHoursLoading(false));
+  }, [activeTab, place]);
 
   // Save last query to localStorage
   useEffect(() => {
@@ -489,6 +511,7 @@ export default function App() {
                 { key: 'resumen', label: 'Resumen', icon: AlertTriangle },
                 { key: 'heladas', label: 'Heladas', icon: Snowflake },
                 { key: 'clima',   label: 'Clima', icon: CloudRain },
+              { key: 'frio',    label: 'H. Frío', icon: Thermometer },
               ] as { key: Tab; label: string; icon: any }[]).map(({ key, label, icon: Icon }) => (
                 <button
                   key={key}
@@ -583,6 +606,27 @@ export default function App() {
                   transition={{ duration: 0.2 }}
                 >
                   <WeatherForecast dailyRain={dailyRain} rain24mm={rain24mm} />
+                </motion.div>
+              )}
+              {activeTab === 'frio' && (
+                <motion.div
+                  key="frio"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <h2 className="text-2xl md:text-3xl font-light tracking-tight text-gray-900 mb-6 flex items-center gap-3">
+                    <Thermometer className="w-6 h-6 text-blue-500" strokeWidth={1.5} />
+                    Horas Frío Acumuladas
+                  </h2>
+                  <ColdHours
+                    times={coldHoursData?.times ?? []}
+                    temperatures={coldHoursData?.temps ?? []}
+                    totalHours={coldHoursData?.total ?? 0}
+                    loading={coldHoursLoading}
+                    seasonStart={getSeasonStart()}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
