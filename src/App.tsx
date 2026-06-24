@@ -399,7 +399,7 @@ export default function App() {
             </h1>
           </div>
           <p className="mt-1 text-sm md:text-base text-gray-500 font-light max-w-2xl mx-auto">
-            Sistema de monitoreo agrícola inteligente
+            Sistema de alertas agrícolas para Chile
           </p>
         </motion.header>
 
