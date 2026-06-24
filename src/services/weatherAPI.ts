@@ -1,4 +1,5 @@
 import { fetchJSONWithCache } from '../utils/cache';
+import { findNearestAirport } from '../utils/airports';
 
 const COUNTRY_DEFAULT = "CL";
 
@@ -210,7 +211,6 @@ export async function fetchObservations(
   bust = false,
   signal?: AbortSignal
 ): Promise<MetarData | null> {
-  const { findNearestAirport } = await import('../utils/airports');
   const airport = findNearestAirport(lat, lon);
   if (!airport) return null;
 
