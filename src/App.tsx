@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Leaf, AlertTriangle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Leaf, AlertTriangle, Snowflake, CloudRain } from 'lucide-react';
+
+type Tab = 'resumen' | 'heladas' | 'clima';
 
 import { SearchBar } from './components/SearchBar';
 import { RiskIndicator } from './components/RiskIndicator';
@@ -30,6 +32,7 @@ export default function App() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
+  const [activeTab, setActiveTab] = useState<Tab>('resumen');
 
   // Load recent searches
   useEffect(() => {
@@ -446,21 +449,6 @@ export default function App() {
           onClearRecent={handleClearRecent}
         />
 
-        {/* Night Focus Toggle */}
-        <div className="flex items-center justify-center mb-8">
-          <label className="flex items-center gap-3 cursor-pointer bg-gray-50 px-4 py-3 rounded-2xl border border-gray-200/50 hover:bg-gray-100 transition-all">
-            <input
-              type="checkbox"
-              checked={focusNight}
-              onChange={e => setFocusNight(e.target.checked)}
-              className="w-4 h-4 text-emerald-600 rounded focus:ring-2 focus:ring-emerald-500"
-            />
-            <span className="text-sm text-gray-700 font-light">
-              Solo período nocturno (18:00–08:00)
-            </span>
-          </label>
-        </div>
-
         {/* Error Display */}
         {error && (
           <motion.div
@@ -522,54 +510,109 @@ export default function App() {
         {/* Weather Data Display */}
         {meteo && !loading && (
           <>
-            {/* Main Risk Indicators */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4 }}
-            >
-              <h2 className="text-2xl md:text-3xl font-light tracking-tight text-gray-900 mb-6 flex items-center gap-3">
-                <AlertTriangle className="w-6 h-6 text-red-500" strokeWidth={1.5} />
-                Alertas de Riesgo
-              </h2>
-              <div className="grid md:grid-cols-3 gap-4 md:gap-5 mb-10">
-                <RiskIndicator
-                  title="Riesgo de Heladas (próx. noche)"
-                  tooltipText="Indica la probabilidad de que las temperaturas desciendan por debajo de 0°C durante la noche, lo que puede dañar cultivos sensibles."
-                  {...frostNextNight}
-                  severity={frostNextNight.severity}
-                />
-                <RiskIndicator
-                  title="Riesgo de Hongos (próx. 48h)"
-                  tooltipText="Calcula el riesgo de desarrollo de enfermedades fúngicas basándose en la humedad y temperatura. Alta humedad + temperaturas moderadas = mayor riesgo."
-                  {...fungalRiskData}
-                  severity={fungalRiskData.severity}
-                />
-                {(() => {
-                  const dailyMaxUV = meteo?.daily?.uv_index_max?.[0];
-                  const month = new Date().getMonth() + 1;
-                  if (dailyMaxUV == null) return null;
-                  const uvCat = uvCategory(dailyMaxUV, month);
-                  return (
+            {/* Tab Bar */}
+            <div className="flex gap-2 mb-6 bg-gray-100 p-1 rounded-2xl">
+              {([
+                { key: 'resumen', label: 'Resumen', icon: AlertTriangle },
+                { key: 'heladas', label: 'Heladas', icon: Snowflake },
+                { key: 'clima',   label: 'Clima 5d', icon: CloudRain },
+              ] as { key: Tab; label: string; icon: any }[]).map(({ key, label, icon: Icon }) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-sm font-light transition-all duration-200 ${
+                    activeTab === key
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" strokeWidth={1.5} />
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Tab Content */}
+            <AnimatePresence mode="wait">
+              {activeTab === 'resumen' && (
+                <motion.div
+                  key="resumen"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <h2 className="text-2xl md:text-3xl font-light tracking-tight text-gray-900 mb-6 flex items-center gap-3">
+                    <AlertTriangle className="w-6 h-6 text-red-500" strokeWidth={1.5} />
+                    Alertas de Riesgo
+                  </h2>
+                  <div className="grid md:grid-cols-3 gap-4 md:gap-5 mb-10">
                     <RiskIndicator
-                      title="Índice UV (máximo hoy)"
-                      tooltipText="Mide la intensidad de la radiación ultravioleta del sol. Valores altos requieren protección para trabajadores agrícolas y pueden afectar algunos cultivos."
-                      {...uvCat}
-                      severity={uvCat.severity}
+                      title="Riesgo de Heladas (próx. noche)"
+                      tooltipText="Indica la probabilidad de que las temperaturas desciendan por debajo de 0°C durante la noche, lo que puede dañar cultivos sensibles."
+                      {...frostNextNight}
+                      severity={frostNextNight.severity}
                     />
-                  );
-                })()}
-              </div>
-            </motion.div>
+                    <RiskIndicator
+                      title="Riesgo de Hongos (próx. 48h)"
+                      tooltipText="Calcula el riesgo de desarrollo de enfermedades fúngicas basándose en la humedad y temperatura. Alta humedad + temperaturas moderadas = mayor riesgo."
+                      {...fungalRiskData}
+                      severity={fungalRiskData.severity}
+                    />
+                    {(() => {
+                      const dailyMaxUV = meteo?.daily?.uv_index_max?.[0];
+                      const month = new Date().getMonth() + 1;
+                      if (dailyMaxUV == null) return null;
+                      const uvCat = uvCategory(dailyMaxUV, month);
+                      return (
+                        <RiskIndicator
+                          title="Índice UV (máximo hoy)"
+                          tooltipText="Mide la intensidad de la radiación ultravioleta del sol. Valores altos requieren protección para trabajadores agrícolas y pueden afectar algunos cultivos."
+                          {...uvCat}
+                          severity={uvCat.severity}
+                        />
+                      );
+                    })()}
+                  </div>
+                  <TodaySummary meteo={meteo} obs={obs} uvNow={uvNow} />
+                </motion.div>
+              )}
 
-            {/* Today's Summary */}
-            <TodaySummary meteo={meteo} obs={obs} uvNow={uvNow} />
+              {activeTab === 'heladas' && (
+                <motion.div
+                  key="heladas"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="flex items-center justify-end mb-4">
+                    <label className="flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-200/50 hover:bg-gray-100 transition-all">
+                      <input
+                        type="checkbox"
+                        checked={focusNight}
+                        onChange={e => setFocusNight(e.target.checked)}
+                        className="w-4 h-4 text-emerald-600 rounded focus:ring-2 focus:ring-emerald-500"
+                      />
+                      <span className="text-sm text-gray-700 font-light">Solo período nocturno (18:00–08:00)</span>
+                    </label>
+                  </div>
+                  <FrostForecast frostBands={frostBands} focusNight={focusNight} />
+                </motion.div>
+              )}
 
-            {/* Frost Forecast */}
-            <FrostForecast frostBands={frostBands} focusNight={focusNight} />
-
-            {/* Weather Forecast */}
-            <WeatherForecast dailyRain={dailyRain} rain24mm={rain24mm} />
+              {activeTab === 'clima' && (
+                <motion.div
+                  key="clima"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <WeatherForecast dailyRain={dailyRain} rain24mm={rain24mm} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </>
         )}
 
