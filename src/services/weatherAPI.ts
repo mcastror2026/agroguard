@@ -194,17 +194,48 @@ export async function fetchColdHoursHistory(
   return await fetchJSONWithCache(url, 3600, bust, { signal }); // 1h cache
 }
 
+export interface MetarData {
+  airportName: string;
+  icao: string;
+  distanceKm: number;
+  temp: number | null;
+  dewp: number | null;
+  humidity: number | null;
+  observedAt: string | null;
+}
+
 export async function fetchObservations(
   lat: number,
   lon: number,
   bust = false,
   signal?: AbortSignal
-) {
-  const url = `https://api.open-meteo.com/v1/metar?latitude=${lat}&longitude=${lon}&count=1`;
-  
+): Promise<MetarData | null> {
+  const { findNearestAirport } = await import('../utils/airports');
+  const airport = findNearestAirport(lat, lon);
+  if (!airport) return null;
+
   try {
-    const { json } = await fetchJSONWithCache(url, 300, bust, { signal }); // 5 min cache
-    return json?.data?.[0] || null;
+    const url = `https://aviationweather.gov/api/data/metar?ids=${airport.icao}&format=json`;
+    const { json } = await fetchJSONWithCache(url, 1800, bust, { signal });
+    const raw = Array.isArray(json) ? json[0] : null;
+    if (!raw) return null;
+
+    const temp = typeof raw.temp === 'number' ? raw.temp : null;
+    const dewp = typeof raw.dewp === 'number' ? raw.dewp : null;
+    let humidity: number | null = null;
+    if (temp !== null && dewp !== null) {
+      humidity = Math.round(100 - 5 * (temp - dewp));
+    }
+
+    return {
+      airportName: airport.name,
+      icao: airport.icao,
+      distanceKm: airport.distanceKm,
+      temp,
+      dewp,
+      humidity,
+      observedAt: raw.obsTime ?? null,
+    };
   } catch {
     return null;
   }
